@@ -16,6 +16,21 @@ FROM teams;
 SELECT *
 FROM teamsfranchises;
 
+SELECT *
+FROM appearances;
+
+SELECT *
+FROM teams;
+
+SELECT *
+FROM collegeplaying;
+
+SELECT *
+FROM schools;
+
+SELECT *
+FROM salaries;
+
 -- **Initial Questions**
 
 -- 1. What range of years for baseball games played does the provided database cover? 
@@ -26,14 +41,34 @@ FROM pitching;
 
 -- 2. Find the name and height of the shortest player in the database. How many games did he play in? What is the name of the team for which he played?
 
-SELECT MIN(height), namegiven, namelast
-FROM people
-WHERE 
-
+SELECT namegiven, namelast, g_all, t.name, MIN(height) AS shortest
+FROM people AS p
+LEFT JOIN appearances AS a
+USING (playerid)
+LEFT JOIN teams AS t
+ON a.teamid = t.teamid
+GROUP BY namegiven, namelast,g_all, t.name
+ORDER BY shortest ASC
+LIMIT 1;
+--Edward C Gaedel, played 1 game for ST Louis Browns 
+--takes a sec for this to run, could try using ON in both places instead or try a subquery
 
 
 -- 3. Find all players in the database who played at Vanderbilt University. Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues. Sort this list in descending order by the total salary earned. Which Vanderbilt player earned the most money in the majors?
-	
+
+
+SELECT namegiven, namelast, salary
+FROM people
+LEFT JOIN salaries
+USING (playerid)
+LEFT JOIN collegeplaying
+USING (playerid);	
+
+	SELECT schoolname, schoolid, playerid
+	FROM schools
+	LEFT JOIN collegeplaying
+	USING (schoolid)
+	WHERE schoolname = 'Vanderbilt University';
 
 -- 4. Using the fielding table, group players into three groups based on their position: label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", and those with position "P" or "C" as "Battery". Determine the number of putouts made by each of these three groups in 2016.
    
