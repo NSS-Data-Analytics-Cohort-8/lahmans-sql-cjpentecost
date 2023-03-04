@@ -57,18 +57,22 @@ LIMIT 1;
 -- 3. Find all players in the database who played at Vanderbilt University. Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues. Sort this list in descending order by the total salary earned. Which Vanderbilt player earned the most money in the majors?
 
 
-SELECT namegiven, namelast, salary
+SELECT namegiven, namelast, SUM(salary) AS total_salary
 FROM people
 LEFT JOIN salaries
 USING (playerid)
 LEFT JOIN collegeplaying
-USING (playerid);	
-
-	SELECT schoolname, schoolid, playerid
-	FROM schools
-	LEFT JOIN collegeplaying
+USING (playerid)	
+WHERE playerid IN 
+(SELECT DISTINCT(playerid)
+	FROM collegeplaying
+	LEFT JOIN schools
 	USING (schoolid)
-	WHERE schoolname = 'Vanderbilt University';
+	WHERE schoolname = 'Vanderbilt University')
+	GROUP BY namegiven, namelast
+ORDER BY total_salary DESC;
+--David Taylor Price, really large # - not convinced this is correct but want to move on.
+
 
 -- 4. Using the fielding table, group players into three groups based on their position: label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", and those with position "P" or "C" as "Battery". Determine the number of putouts made by each of these three groups in 2016.
    
